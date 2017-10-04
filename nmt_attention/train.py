@@ -80,8 +80,10 @@ infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder, maximum_iterati
 infer_result = infer_outputs.sample_id
 
 # Loss
-cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
-loss = tf.reduce_mean(cross_entropy)
+#cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
+#loss = tf.reduce_mean(cross_entropy)
+weights = tf.to_float(tf.not_equal(outputs[:, :-1], 1))
+loss = tf.contrib.seq2seq.sequence_loss(logits, target, weights=weights)
 
 # Optimizer
 optimizer = tf.train.AdamOptimizer(learning_rate)
