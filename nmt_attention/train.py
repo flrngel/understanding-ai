@@ -22,6 +22,7 @@ src_table_size = 17191
 tgt_table_size = 7709
 src_eos_id = tf.cast(src_table.lookup(tf.constant('</s>')), tf.int64)
 tgt_eos_id = tf.cast(tgt_table.lookup(tf.constant('</s>')), tf.int64)
+tgt_sos_id = tf.cast(tgt_table.lookup(tf.constant('<s>')), tf.int64)
 
 # Read data
 src_dataset = tf.contrib.data.TextLineDataset(['./iwslt15/train.en'])
@@ -72,6 +73,12 @@ decoder = tf.contrib.seq2seq.BasicDecoder(decoder_cell, decode_helper, attention
 outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder)
 logits = outputs.rnn_output
 
+# Inference
+infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
+infer_decoder = tf.contrib.seq2seq.BasicDecoder(decoder_cell, infer_decode_helper, attention_state, output_layer=projection_layer)
+infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
+infer_result = infer_outputs.sample_id
+
 # Loss
 cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
 loss = tf.reduce_mean(cross_entropy)
@@ -94,6 +101,9 @@ with tf.Session() as sess:
       _, _loss, _global_step = sess.run([opt, loss, global_step])
       print([epoch, _loss, _global_step])
     except tf.errors.OutOfRangeError:
+      sess.run(batched_iterator.initializer)
+      _result, _target = sess.run([infer_result, target])
+      print((_result[0], _target[0]))
       sess.run(batched_iterator.initializer)
       epoch += 1
       if epoch == 12:
