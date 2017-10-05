@@ -82,7 +82,7 @@ infer_result = infer_outputs.sample_id
 # Loss
 #cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
 #loss = tf.reduce_mean(cross_entropy)
-weights = tf.to_float(tf.concat([tf.not_equal(target[:, :-1], tgt_eos_id), tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_eos_id))], 1))
+weights = tf.to_float(tf.concat([tf.not_equal(target[:, :-1], tgt_eos_id), tf.expand_dims(tf.fill([tf.size(source_lengths)], tf.constant(True)), 1)], 1))
 loss = tf.contrib.seq2seq.sequence_loss(logits, target, weights=weights)
 
 # Optimizer
