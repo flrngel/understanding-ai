@@ -24,9 +24,13 @@ src_eos_id = tf.cast(src_table.lookup(tf.constant('</s>')), tf.int64)
 tgt_eos_id = tf.cast(tgt_table.lookup(tf.constant('</s>')), tf.int64)
 tgt_sos_id = tf.cast(tgt_table.lookup(tf.constant('<s>')), tf.int64)
 
+# file placeholder
+src_files = tf.placeholder(tf.string, shape=[None])
+tgt_files = tf.placeholder(tf.string, shape=[None])
+
 # Read data
-src_dataset = tf.contrib.data.TextLineDataset(['./iwslt15/train.en'])
-tgt_dataset = tf.contrib.data.TextLineDataset(['./iwslt15/train.vi'])
+src_dataset = tf.contrib.data.TextLineDataset(src_files)
+tgt_dataset = tf.contrib.data.TextLineDataset(tgt_files)
 
 # Convert data to word indices
 src_dataset = src_dataset.map(lambda string: tf.concat([['<s>'], tf.string_split([string]).values, ['</s>']], 0))
@@ -95,7 +99,7 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
   sess.run(tf.tables_initializer())
-  sess.run(batched_iterator.initializer)
+  sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
 
   epoch = 0
   for i in range(100000):
@@ -103,10 +107,10 @@ with tf.Session() as sess:
       _, _loss, _global_step = sess.run([opt, loss, global_step])
       print([epoch, _loss, _global_step])
     except tf.errors.OutOfRangeError:
-      sess.run(batched_iterator.initializer)
+      sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/tst2012.en'], tgt_files: ['./iwslt15/tst202.vi']})
       _result, _target = sess.run([infer_result, target])
       print((_result[0], _target[0]))
-      sess.run(batched_iterator.initializer)
+      sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
       epoch += 1
       if epoch == 12:
         save_path = saver.save(sess, "model.ckpt")
