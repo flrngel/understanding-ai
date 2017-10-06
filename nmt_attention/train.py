@@ -107,9 +107,15 @@ with tf.Session() as sess:
       _, _loss, _global_step = sess.run([opt, loss, global_step])
       print([epoch, _loss, _global_step])
     except tf.errors.OutOfRangeError:
-      sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/tst2012.en'], tgt_files: ['./iwslt15/tst202.vi']})
-      _result, _target = sess.run([infer_result, target])
-      print((_result[0], _target[0]))
+      sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/tst2012.en'], tgt_files: ['./iwslt15/tst2012.vi']})
+      result = []
+      target = []
+      try:
+        _result, _target = sess.run([infer_result, target])
+        _ra.append(_result)
+        _ta.append(_target)
+      except tf.errors.OutOfRangeError:
+        bleu, _, _, _, _, _ = compute_bleu(_ta, _ra)
       sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
       epoch += 1
       if epoch == 12:
