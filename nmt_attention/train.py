@@ -116,6 +116,7 @@ with tf.Session() as sess:
         _ta.append(_target)
       except tf.errors.OutOfRangeError:
         bleu, _, _, _, _, _ = compute_bleu(_ta, _ra)
+        print(f'bleu score: {bleu}')
       sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
       epoch += 1
       if epoch == 12:
