@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.python.layers import core as layers_core
 import tflearn
 from util import *
+from bleu import compute_bleu
 
 batch_size = 32
 pad_length = 60
@@ -78,10 +79,11 @@ outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder)
 logits = outputs.rnn_output
 
 # Inference
-infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
-infer_decoder = tf.contrib.seq2seq.BasicDecoder(decoder_cell, infer_decode_helper, attention_state, output_layer=projection_layer)
-infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
-infer_result = infer_outputs.sample_id
+#infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
+infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
+    attention_state, 3, output_layer=projection_layer)
+infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
+infer_result = infer_outputs.predicted_ids
 
 # Loss
 #cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
@@ -107,18 +109,11 @@ with tf.Session() as sess:
       _, _loss, _global_step = sess.run([opt, loss, global_step])
       print([epoch, _loss, _global_step])
     except tf.errors.OutOfRangeError:
+      save_path = saver.save(sess, "model.ckpt")
       sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/tst2012.en'], tgt_files: ['./iwslt15/tst2012.vi']})
-      result = []
-      target = []
-      try:
-        _result, _target = sess.run([infer_result, target])
-        _ra.append(_result)
-        _ta.append(_target)
-      except tf.errors.OutOfRangeError:
-        bleu, _, _, _, _, _ = compute_bleu(_ta, _ra)
-        print(f'bleu score: {bleu}')
+      _result, _target = sess.run([infer_result, target])
+      print((_result[0], _target[0]))
       sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
       epoch += 1
       if epoch == 12:
-        save_path = saver.save(sess, "model.ckpt")
         break
