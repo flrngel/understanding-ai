@@ -81,7 +81,7 @@ logits = outputs.rnn_output
 # Inference
 #infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
 infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
-    attention_state, 3, output_layer=projection_layer)
+    attention_state, 1, output_layer=projection_layer)
 infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
 infer_result = infer_outputs.predicted_ids
 
