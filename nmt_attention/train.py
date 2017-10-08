@@ -3,9 +3,13 @@ from tensorflow.python.layers import core as layers_core
 import tflearn
 from util import *
 from bleu import compute_bleu
+from tensorflow.contrib.seq2seq import tile_batch
+from tensorflow.contrib.rnn import MultiRNNCell
 
+mode = 'train'
+
+beam_width = 10
 batch_size = 32
-pad_length = 60
 embed_vector_size = 100
 rnn_hidden_size = 128
 
@@ -63,37 +67,56 @@ tgt_lookup = tf.nn.embedding_lookup(tgt_embed, target)
 projection_layer = layers_core.Dense(tgt_table_size)
 
 # Model
-encoder_cell = tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size)
-encoder_outputs, encoder_state = tf.nn.dynamic_rnn(encoder_cell, src_lookup, sequence_length=source_lengths, dtype=tf.float32)
+encoder_cells = MultiRNNCell([tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size) for i in range(4)])
+encoder_outputs, encoder_state = tf.nn.dynamic_rnn(encoder_cells, src_lookup, sequence_length=source_lengths, dtype=tf.float32)
 
-## Basic NTM
-decoder_cell = tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size)
-## Attention NTM (Wrapping)
-attention_mechanism = tf.contrib.seq2seq.LuongAttention(rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths)
-decoder_cell = tf.contrib.seq2seq.AttentionWrapper(decoder_cell, attention_mechanism, attention_layer_size=rnn_hidden_size)
-attention_state = decoder_cell.zero_state(batch_size=tf.size(source_lengths), dtype=tf.float32)
+b_size = tf.size(source_lengths)
 
-decode_helper = tf.contrib.seq2seq.TrainingHelper(tgt_lookup, target_lengths)
-decoder = tf.contrib.seq2seq.BasicDecoder(decoder_cell, decode_helper, attention_state, output_layer=projection_layer)
-outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder)
-logits = outputs.rnn_output
+## use basic cell
+decoder_cells = [tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size) for i in range(4)]
 
-# Inference
-#infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
-infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
-    attention_state, 1, output_layer=projection_layer)
-infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
-infer_result = infer_outputs.predicted_ids
+if mode == 'train':
+  ## Attention
+  attention_mechanism = tf.contrib.seq2seq.LuongAttention(rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths)
+  decoder_cells[-1] = tf.contrib.seq2seq.AttentionWrapper(decoder_cells[-1], attention_mechanism, attention_layer_size=rnn_hidden_size)
+  decoder_cell = MultiRNNCell(decoder_cells)
+  decoder_state = [state for state in encoder_state]
+  decoder_state[-1] = decoder_cells[-1].zero_state(batch_size=b_size, dtype=tf.float32)
+  decoder_state = tuple(decoder_state)
 
-# Loss
-#cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logits)
-#loss = tf.reduce_mean(cross_entropy)
-weights = tf.to_float(tf.concat([tf.not_equal(target[:, :-1], tgt_eos_id), tf.expand_dims(tf.fill([tf.size(source_lengths)], tf.constant(True)), 1)], 1))
-loss = tf.contrib.seq2seq.sequence_loss(logits, target, weights=weights)
+  decode_helper = tf.contrib.seq2seq.TrainingHelper(tgt_lookup, target_lengths)
+  decoder = tf.contrib.seq2seq.BasicDecoder(decoder_cell, decode_helper, decoder_state, output_layer=projection_layer)
+  outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder)
+  logits = outputs.rnn_output
 
-# Optimizer
-optimizer = tf.train.AdamOptimizer(learning_rate)
-opt = optimizer.minimize(loss, global_step=global_step)
+  # Train Loss
+  weights = tf.to_float(tf.concat([tf.not_equal(target[:, :-1], tgt_eos_id), tf.expand_dims(tf.fill([b_size], tf.constant(True)), 1)], 1))
+  loss = tf.contrib.seq2seq.sequence_loss(logits, target, weights=weights)
+
+  # Optimizer
+  optimizer = tf.train.AdamOptimizer(learning_rate)
+  opt = optimizer.minimize(loss, global_step=global_step)
+
+elif mode == 'inference':
+  # Inference
+  #infer_decode_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id))
+  encoder_outputs = tile_batch(encoder_outputs, beam_width)
+  encoder_state = tile_batch(encoder_state, beam_width)
+  source_lengths = tile_batch(source_lengths, beam_width)
+
+  decoder_cells = [tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size) for i in range(4)]
+
+  attention_mechanism = tf.contrib.seq2seq.LuongAttention(rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths)
+  decoder_cells[-1] = tf.contrib.seq2seq.AttentionWrapper(decoder_cells[-1], attention_mechanism, attention_layer_size=rnn_hidden_size)
+  decoder_cell = MultiRNNCell(decoder_cells)
+  decoder_state = [state for state in encoder_state]
+  decoder_state[-1] = decoder_cells[-1].zero_state(batch_size=b_size * beam_width, dtype=tf.float32)
+  decoder_state = tuple(decoder_state)
+
+  infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([tf.size(source_lengths)], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
+      decoder_state, beam_width, output_layer=projection_layer)
+  infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
+  infer_result = infer_outputs.predicted_ids
 
 # Training Section
 saver = tf.train.Saver()
