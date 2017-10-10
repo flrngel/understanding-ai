@@ -99,6 +99,9 @@ if mode == 'train':
   optimizer = tf.train.AdamOptimizer(learning_rate)
   opt = optimizer.minimize(loss, global_step=global_step)
 
+  # Summary
+  tf.summary.scalar('train_loss', loss)
+
 elif mode == 'inference':
   # tile batch for beam search decoder
   encoder_outputs = tile_batch(encoder_outputs, beam_width)
@@ -119,8 +122,10 @@ elif mode == 'inference':
 
 # Training Section
 saver = tf.train.Saver()
+merged = tf.summary.merge_all()
 
 with tf.Session() as sess:
+  sm = tf.summary.FileWriter('./logs', sess.graph)
   sess.run(tf.global_variables_initializer())
   sess.run(tf.tables_initializer())
 
@@ -130,6 +135,9 @@ with tf.Session() as sess:
     for i in range(100000):
       try:
         _, _loss, _global_step = sess.run([opt, loss, global_step])
+        if global_step % 100 == 0:
+          summary = sess.run(merged)
+          sm.add_summary(summary, i)
         print([epoch, _loss, _global_step])
       except tf.errors.OutOfRangeError:
         save_path = saver.save(sess, "./logs/model.ckpt")
