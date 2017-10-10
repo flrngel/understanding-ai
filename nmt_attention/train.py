@@ -112,7 +112,7 @@ elif mode == 'inference':
   decoder_state[-1] = decoder_cells[-1].zero_state(batch_size=b_size * beam_width, dtype=tf.float32).clone(cell_state=encoder_state[-1])
   decoder_state = tuple(decoder_state)
 
-  infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([tf.size(b_size * beam_width], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
+  infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(decoder_cell, tgt_embed, tf.fill([b_size * beam_width], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
       decoder_state, beam_width, output_layer=projection_layer)
   infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
   infer_result = infer_outputs.predicted_ids
@@ -135,7 +135,7 @@ with tf.Session() as sess:
         save_path = saver.save(sess, "./logs/model.ckpt")
         sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
         epoch += 1
-        if epoch == 12:
+        if epoch == 1:
           break
   elif mode == 'inference':
     saver.restore('./logs/model.ckpt')
