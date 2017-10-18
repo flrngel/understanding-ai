@@ -8,6 +8,11 @@ So this code has to be test after 1.4 release.
 
 Past commit includes working with BasicDecoder (Greedy)
 
+## Todo
+
+- [ ] test BeamSearchDecoder with tensorflow 1.4 
+- [ ] make BLEU metrics work
+
 ## Paper References
 
 - [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/abs/1409.3215)
