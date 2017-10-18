@@ -8,7 +8,7 @@ from tensorflow.python.util import nest
 class Model(object):
   def __init__(self):
     self.batch_size = 32
-    self.beam_width = 1
+    self.beam_width = 10
     self.rnn_layer_depth = 2
     self.rnn_hidden_size = 128
     self.embed_vector_size = 100
@@ -16,7 +16,7 @@ class Model(object):
   def init(self):
     # init
     self.global_step = global_step = tf.Variable(0, trainable=False, name='global_step')
-    self.learning_rate = learning_rate = tf.train.exponential_decay(0.0001, global_step, 500, 0.95, staircase=True)
+    self.learning_rate = learning_rate = tf.train.exponential_decay(1e-2, global_step, 500, 0.95, staircase=True)
 
     # Load classes
     src_table = tf.contrib.lookup.index_table_from_file('./iwslt15/vocab.en', default_value=0)
@@ -79,11 +79,11 @@ class Model(object):
   def wrap_multi_rnn(self, rnn_layer):
     return MultiRNNCell(rnn_layer)
 
-  def wrap_attention(self, encoder_outputs, source_lengths):
+  def wrap_attention(self, cell, encoder_outputs, source_lengths):
     attention_mechanism = tf.contrib.seq2seq.LuongAttention(
-        self.rnn_hidden_size, encoder_outputs, source_lengths)
+        self.rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths)
     attention = tf.contrib.seq2seq.AttentionWrapper(
-        self.get_cell(), attention_mechanism, attention_layer_size=self.rnn_hidden_size)
+        cell, attention_mechanism, attention_layer_size=self.rnn_hidden_size)
     return attention
 
   def encoder_model(self):
@@ -93,58 +93,57 @@ class Model(object):
           encoder_cells, self.src_lookup, sequence_length=self.source_lengths, dtype=tf.float32)
 
   def decode_model(self, train_mode=True):
-    encoder_outputs = self.encoder_outputs
-    source_lengths = self.source_lengths
-    encoder_state = self.encoder_state
-    global_step = self.global_step
-    projection_layer = self.projection_layer
-    tgt_sos_id = self.tgt_sos_id
-    tgt_eos_id = self.tgt_eos_id
-    target = self.target
-    target_lookup = self.tgt_lookup
-    target_lengths = self.target_lengths
-    learning_rate = self.learning_rate
-    target_embed = self.tgt_embed
+    with tf.variable_scope('decoder') as scope:
+      encoder_outputs = self.encoder_outputs
+      source_lengths = self.source_lengths
+      encoder_state = self.encoder_state
+      global_step = self.global_step
+      projection_layer = self.projection_layer
+      tgt_sos_id = self.tgt_sos_id
+      tgt_eos_id = self.tgt_eos_id
+      target = self.target
+      target_lookup = self.tgt_lookup
+      target_lengths = self.target_lengths
+      learning_rate = self.learning_rate
+      target_embed = self.tgt_embed
 
-    if train_mode == True:
-      reuse = False
-    else:
-      reuse = False
+      if train_mode == True:
+        reuse = False
+      else:
+        reuse = False
 
-    # Prepare
-    b_size = tf.size(source_lengths)
-    if train_mode == False:
-      b_size_t = tf.to_int32(b_size * self.beam_width)
+      # Prepare
+      b_size = tf.size(source_lengths)
+      if train_mode == False:
+        b_size_t = tf.to_int32(b_size * self.beam_width)
+        encoder_outputs = tile_batch(encoder_outputs, self.beam_width) #tile_batch(encoder_outputs, beam_width)
+        encoder_state = tile_batch(encoder_state, self.beam_width)
+        source_lengths = tile_batch(source_lengths, self.beam_width)
+      else:
+        b_size_t = b_size
 
-      encoder_outputs = tile_batch(encoder_outputs, self.beam_width) #tile_batch(encoder_outputs, beam_width)
-      encoder_state = tile_batch(encoder_state, self.beam_width)
-      source_lengths = tile_batch(source_lengths, self.beam_width)
-    else:
-      b_size_t = b_size
-
-    with tf.variable_scope('decoder'):
       # Create decoder_cell
       rnn_layer = [self.get_cell() for i in range(self.rnn_layer_depth)]
       
       # Create attention cell (top of rnn layer)
-      rnn_layer[-1] = self.wrap_attention(encoder_outputs, source_lengths)
       multi_rnn = self.wrap_multi_rnn(rnn_layer)
+      attention = self.wrap_attention(multi_rnn, encoder_outputs, source_lengths)
+      attention = tf.contrib.rnn.DeviceWrapper(attention, '/cpu:0')
 
       # sync cell state with encoder
 
-      decoder_state = [enc for enc in encoder_state]
-      decoder_state[-1] = rnn_layer[-1].zero_state(batch_size=b_size_t, dtype=tf.float32).clone(
-          cell_state=encoder_state[-1])
-      decoder_state = tuple(decoder_state)
+      #decoder_state = [enc for enc in encoder_state]
+      decoder_state = attention.zero_state(batch_size=b_size_t, dtype=tf.float32).clone(
+          cell_state=encoder_state)
 
       if train_mode == True:
         # define decoder
         decode_helper = tf.contrib.seq2seq.TrainingHelper(
             target_lookup, target_lengths)
         decoder = tf.contrib.seq2seq.BasicDecoder(
-            multi_rnn, decode_helper, decoder_state, output_layer=projection_layer)
-        outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder)
-        logits = outputs.rnn_output
+            attention, decode_helper, decoder_state, output_layer=projection_layer)
+        outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder, scope=scope)
+        logits = tf.identity(outputs.rnn_output)
 
         # Train Loss
         weights = tf.to_float(tf.concat([
@@ -155,16 +154,16 @@ class Model(object):
         # Optimize
         params = tf.trainable_variables()
         gradients = tf.gradients(loss, params)
-        clipped_gradients, _ = tf.clip_by_global_norm(gradients, 1)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, 5.0)
         optimizer = tf.train.AdamOptimizer(learning_rate)
         opt = optimizer.apply_gradients(zip(clipped_gradients, params), global_step=global_step)
         return opt, loss, global_step
 
       else:
         infer_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
-            multi_rnn, target_embed, tf.fill([b_size], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
+            attention, target_embed, tf.fill([b_size], tf.to_int32(tgt_sos_id)), tf.to_int32(tgt_eos_id),
             decoder_state, self.beam_width, output_layer=projection_layer)
         infer_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2))
+            infer_decoder, maximum_iterations=tf.round(tf.reduce_max(source_lengths) * 2), scope=scope)
         infer_result = infer_outputs.predicted_ids
-        return infer_result, target, global_step
+        return infer_result, target, global_step, target

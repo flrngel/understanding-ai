@@ -15,7 +15,7 @@ beam_width = 10
 batch_size = 32
 embed_vector_size = 100
 rnn_hidden_size = 128
-rnn_layer_depth = 2
+rnn_layer_depth = 4
 
 def get_cell():
   return tf.nn.rnn_cell.BasicLSTMCell(rnn_hidden_size)
@@ -23,7 +23,7 @@ def get_cell():
 def wrap_attention(encoder_outputs, source_lengths, cell=None):
   if cell is None:
     cell = get_cell()
-  attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths)
+  attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(rnn_hidden_size, encoder_outputs, memory_sequence_length=source_lengths, normalize=True)
   attention = tf.contrib.seq2seq.AttentionWrapper(cell, attention_mechanism, attention_layer_size=rnn_hidden_size)
   return attention
 
@@ -44,13 +44,23 @@ with train_graph.as_default():
   init2 = tf.tables_initializer()
   saver = tf.train.Saver()
 
+  for i in tf.get_collection("trainable_variables"):
+    print(i)
+    if i.name == 'decoder/multi_rnn_cell/cell_1/attention_wrapper/attention_layer/kernel:0':
+      ssibal = tf.reduce_mean(i)
+
 with eval_graph.as_default():
   eval_model = Model()
   eval_batched_iterator, eval_src_files, eval_tgt_files = eval_model.init()
   eval_model.encoder_model()
-  infer_result, infer_target, eval_global_step = eval_model.decode_model(train_mode=False)
+  infer_result, infer_target, eval_global_step, infer_tgt = eval_model.decode_model(train_mode=False)
   eval_saver = tf.train.Saver()
   eval_init1 = tf.tables_initializer()
+
+  for i in tf.get_collection("trainable_variables"):
+    print(i)
+    if i.name == 'decoder/multi_rnn_cell/cell_1/attention_wrapper/attention_layer/kernel:0':
+      ssibal2 = tf.reduce_mean(i)
 
 # Training Section
 #merged = tf.summary.merge_all()
@@ -66,7 +76,7 @@ eval_sess.run([eval_init1])
 if mode == 'train':
   epoch = 0
   sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
-  for i in range(100000):
+  for i in range(1000000):
     try:
       _, _loss, _global_step = sess.run([opt, loss, global_step])
       print([epoch, _loss, _global_step])
@@ -76,10 +86,11 @@ if mode == 'train':
         #sm.add_summary(summary, i)
         save_path = saver.save(sess, "./logs/model.ckpt")
         eval_saver.restore(eval_sess, './logs/model.ckpt')
+        #print((sess.run(ssibal), eval_sess.run(ssibal2)))
         eval_sess.run(eval_batched_iterator.initializer, feed_dict={eval_src_files: ['./iwslt15/tst2012.en'], eval_tgt_files: ['./iwslt15/tst2012.vi']})
         _result = eval_sess.run(infer_result)
         #_result, _target = eval_sess.run([infer_result, infer_target])
-        print((_result[0,:,0]))
+        print((_result[0][:,0], infer_tgt[0]))
       if i % 30 == 0:
         pass
         #_result, _target = sess.run([infer_result, target])
@@ -90,10 +101,7 @@ if mode == 'train':
       save_path = saver.save(sess, "./logs/model.ckpt")
       sess.run(batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/train.en'], tgt_files: ['./iwslt15/train.vi']})
       epoch += 1
-      sess.run(eval_batched_iterator.initializer, feed_dict={src_files: ['./iwslt15/tst2012.en'], tgt_files: ['./iwslt15/tst2012.vi']})
-      _result, _target = sess.run([infer_result, target])
-      print((_result[0,:,0], _target[0]))
-      if epoch == 1:
+      if epoch == 12:
         break
 elif mode == 'inference':
   #sm = tf.summary.FileWriter('./test_logs', sess.graph)
