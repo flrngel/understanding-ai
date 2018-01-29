@@ -6,7 +6,7 @@ My works for understanding ai papers, ai projects, etc.
 
 - [TagSpace: Semantic Embeddings from Hashtags](https://github.com/flrngel/TagSpace-tensorflow)
 - [A Structured Self-Attentive Sentence Embedding](https://github.com/flrngel/Self-Attentive-tensorflow)
-- [Transformer](https://github.com/flrngel/Transformer-tensorflow)
+- [Attention is all you need](https://github.com/flrngel/Transformer-tensorflow)
 
 ## Notes on papers
 
