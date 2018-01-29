@@ -2,7 +2,7 @@
 
 My works for understanding ai papers, ai projects, etc.
 
-## Implementing Papers
+## Implemented Papers
 
 - [TagSpace: Semantic Embeddings from Hashtags](https://github.com/flrngel/TagSpace-tensorflow)
 - [A Structured Self-Attentive Sentence Embedding](https://github.com/flrngel/Self-Attentive-tensorflow)
