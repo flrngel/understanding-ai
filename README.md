@@ -13,6 +13,9 @@ My works for understanding ai papers, ai projects, etc.
 
 Note on github starting from `January 29, 2018`
 
+Inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers).
+
 For convenience of searching the knowledge I have studied.
 
 - [Convolution Sequence to Sequence Learning](https://github.com/flrngel/understanding-ai/issues/1)
+- [Bi-Directional Block Self-Attention for fast and memory-efficient sequence modeling](https://github.com/flrngel/understanding-ai/issues/2)
