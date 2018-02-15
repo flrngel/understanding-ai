@@ -17,6 +17,7 @@ Inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers).
 
 For convenience of searching the knowledge I have studied.
 
+- [Zero-Shot Super-Resolution using Deep Internal Learning](https://github.com/flrngel/understanding-ai/issues/4)
 - [Convolution Sequence to Sequence Learning](https://github.com/flrngel/understanding-ai/issues/3)
 - [Bi-Directional Block Self-Attention for fast and memory-efficient sequence modeling](https://github.com/flrngel/understanding-ai/issues/2)
 - [Convolution Sequence to Sequence Learning](https://github.com/flrngel/understanding-ai/issues/1)
