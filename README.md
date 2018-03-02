@@ -18,6 +18,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Diversity Is All You Need: Learning Skills without a Reward Function](https://github.com/flrngel/understanding-ai/issues/7)
 - [Non-Autoregressive Neural Machine Translation](https://github.com/flrngel/understanding-ai/issues/6)
 - [Generating Wikipedia By Summarizing Long Sequences](https://github.com/flrngel/understanding-ai/issues/5)
 - [Zero-Shot Super-Resolution using Deep Internal Learning](https://github.com/flrngel/understanding-ai/issues/4)
