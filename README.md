@@ -18,6 +18,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Zero-Shot Question Generation from Knowledge Graphs for Unseen Predicates and Entity Types](https://github.com/flrngel/understanding-ai/issues/8)
 - [Neural Voice Cloning with a Few Samples](https://github.com/flrngel/understanding-ai/issues/8)
 - [Diversity Is All You Need: Learning Skills without a Reward Function](https://github.com/flrngel/understanding-ai/issues/7)
 - [Non-Autoregressive Neural Machine Translation](https://github.com/flrngel/understanding-ai/issues/6)
