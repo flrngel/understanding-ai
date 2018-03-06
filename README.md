@@ -18,6 +18,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Neural Machine Translation in Linear Time](https://github.com/flrngel/understanding-ai/issues/11)
 - [Learning to Generate Reviews and Discovering Sentiment](https://github.com/flrngel/understanding-ai/issues/10)
 - [Zero-Shot Question Generation from Knowledge Graphs for Unseen Predicates and Entity Types](https://github.com/flrngel/understanding-ai/issues/9)
 - [Neural Voice Cloning with a Few Samples](https://github.com/flrngel/understanding-ai/issues/8)
