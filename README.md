@@ -12,7 +12,7 @@ My works for understanding ai papers, ai projects, etc.
 ## Notes on papers
 
 Note on papers using [Github Issues](https://github.com/flrngel/understanding-ai/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+sort%3Acreated-desc) starting from `January 29, 2018`
-(this is inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers))
+(inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers))
 
 For convenience of searching the notes on paper
 
