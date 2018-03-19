@@ -18,6 +18,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Asynchronous Methods for Deep Reinforcement Learning](https://github.com/flrngel/understanding-ai/issues/14)
 - [Dual Learning for Machine Translation](https://github.com/flrngel/understanding-ai/issues/13)
 - [An Empirical Evaluation of generic Convolutional and Recurrent Networks for Sequence Modeling](https://github.com/flrngel/understanding-ai/issues/12)
 - [Neural Machine Translation in Linear Time](https://github.com/flrngel/understanding-ai/issues/11)
