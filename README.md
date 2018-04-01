@@ -18,6 +18,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [A Hybrid Convolutional Variational Autoencoder for Text Generation](https://github.com/flrngel/understanding-ai/issues/15)
 - [Asynchronous Methods for Deep Reinforcement Learning](https://github.com/flrngel/understanding-ai/issues/14)
 - [Dual Learning for Machine Translation](https://github.com/flrngel/understanding-ai/issues/13)
 - [An Empirical Evaluation of generic Convolutional and Recurrent Networks for Sequence Modeling](https://github.com/flrngel/understanding-ai/issues/12)
