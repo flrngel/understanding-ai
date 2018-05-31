@@ -11,7 +11,7 @@ My works for understanding ai papers, ai projects, etc.
 
 ## Personal Research
 
-- [TCN with attention](https://github.com/flrngel/TCN-with-attention)
+- [Character based Temporal Convolutional Networks + Attention Layer](https://github.com/flrngel/TCN-with-attention)
 
 ## Notes on papers
 
