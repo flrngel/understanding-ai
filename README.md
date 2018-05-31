@@ -9,6 +9,10 @@ My works for understanding ai papers, ai projects, etc.
 - [Training RNNs as Fast as CNNs (Single Recurrent Unit)](https://github.com/flrngel/sru-tensorflow)
 - [TagSpace: Semantic Embeddings from Hashtags](https://github.com/flrngel/TagSpace-tensorflow)
 
+## Personal Research
+
+- [TCN with attention](https://github.com/flrngel/TCN-with-attention)
+
 ## Notes on papers
 
 Note on papers using [Github Issues](https://github.com/flrngel/understanding-ai/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+sort%3Acreated-desc) starting from `January 29, 2018`
