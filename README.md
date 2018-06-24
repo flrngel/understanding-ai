@@ -22,6 +22,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [A Simple Method for Commonsense Reasoning](https://github.com/flrngel/understanding-ai/issues/18)
 - [Relational recurrent neural networks](https://github.com/flrngel/understanding-ai/issues/17)
 - [Language Modeling with Gated Convolutional Networks](https://github.com/flrngel/understanding-ai/issues/16)
 - [A Hybrid Convolutional Variational Autoencoder for Text Generation](https://github.com/flrngel/understanding-ai/issues/15)
