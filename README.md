@@ -22,6 +22,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [What you get is what you see: A visual markup decompiler](https://github.com/flrngel/understanding-ai/issues/19)
 - [A Simple Method for Commonsense Reasoning](https://github.com/flrngel/understanding-ai/issues/18)
 - [Relational recurrent neural networks](https://github.com/flrngel/understanding-ai/issues/17)
 - [Language Modeling with Gated Convolutional Networks](https://github.com/flrngel/understanding-ai/issues/16)
