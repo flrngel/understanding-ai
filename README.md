@@ -22,6 +22,8 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+
+- [Self Imitation Learning](https://github.com/flrngel/understanding-ai/issues/21)
 - [Local sparsity control for Naive Bayes with extreme misclassiication costs](https://github.com/flrngel/understanding-ai/issues/20)
 - [What you get is what you see: A visual markup decompiler](https://github.com/flrngel/understanding-ai/issues/19)
 - [A Simple Method for Commonsense Reasoning](https://github.com/flrngel/understanding-ai/issues/18)
