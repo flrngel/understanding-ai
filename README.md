@@ -22,6 +22,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Representation Learning with Contrastive Predictive Coding](https://github.com/flrngel/understanding-ai/issues/24)
 - [Neural Discrete Representation Learning](https://github.com/flrngel/understanding-ai/issues/23)
 - [A Quantum Many-body Wave Function Inspired Language Modeling Approach](https://github.com/flrngel/understanding-ai/issues/22)
 - [Self Imitation Learning](https://github.com/flrngel/understanding-ai/issues/21)
