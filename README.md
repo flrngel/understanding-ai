@@ -22,6 +22,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Subspace match probably does not accurately assess the similarity of learned representations](https://github.com/flrngel/understanding-ai/issues/25)
 - [Representation Learning with Contrastive Predictive Coding](https://github.com/flrngel/understanding-ai/issues/24)
 - [Neural Discrete Representation Learning](https://github.com/flrngel/understanding-ai/issues/23)
 - [A Quantum Many-body Wave Function Inspired Language Modeling Approach](https://github.com/flrngel/understanding-ai/issues/22)
