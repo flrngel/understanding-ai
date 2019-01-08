@@ -15,13 +15,14 @@ My works for understanding ai papers, ai projects, etc.
 
 ## Notes on papers
 
-Note on papers using [Github Issues](https://github.com/flrngel/understanding-ai/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+sort%3Acreated-desc) starting from `January 29, 2018`
+Note or summarization on papers using [Github Issues](https://github.com/flrngel/understanding-ai/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+sort%3Acreated-desc) starting from `January 29, 2018`
 (inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers))
 
 For convenience of searching the notes on paper
 
 **Paper List**
 
+- [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://github.com/flrngel/understanding-ai/issues/26)
 - [Subspace match probably does not accurately assess the similarity of learned representations](https://github.com/flrngel/understanding-ai/issues/25)
 - [Representation Learning with Contrastive Predictive Coding](https://github.com/flrngel/understanding-ai/issues/24)
 - [Neural Discrete Representation Learning](https://github.com/flrngel/understanding-ai/issues/23)
