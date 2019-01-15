@@ -22,6 +22,7 @@ For convenience of searching the notes on paper
 
 **Paper List**
 
+- [Eliminating All Bad Local Minima from Loss Landscapes Without Even Adding an Extra Unit](https://github.com/flrngel/understanding-ai/issues/28)
 - [Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual transfer and Beyond](https://github.com/flrngel/understanding-ai/issues/27)
 - [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://github.com/flrngel/understanding-ai/issues/26)
 - [Subspace match probably does not accurately assess the similarity of learned representations](https://github.com/flrngel/understanding-ai/issues/25)
