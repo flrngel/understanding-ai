@@ -1,19 +1,5 @@
 # Understanding Artificial Intelligence
 
-My works for understanding ai papers, ai projects, etc.
-
-## Implemented Papers
-
-- [Representation Learning with Contrastive Predictive Coding](https://github.com/flrngel/cpc-tensorflow)
-- [Attention Is All You Need](https://github.com/flrngel/Transformer-tensorflow)
-- [A Structured Self-Attentive Sentence Embedding](https://github.com/flrngel/Self-Attentive-tensorflow)
-- [Training RNNs as Fast as CNNs (Single Recurrent Unit)](https://github.com/flrngel/sru-tensorflow)
-- [TagSpace: Semantic Embeddings from Hashtags](https://github.com/flrngel/TagSpace-tensorflow)
-
-## Personal Research
-
-- [Character based Temporal Convolutional Networks + Attention Layer](https://github.com/flrngel/TCN-with-attention)
-
 ## Notes
 
 - [4/18/2023 - https://github.com/showlab/Image2Paragraph](https://github.com/flrngel/understanding-ai/issues/29)
@@ -45,3 +31,15 @@ My works for understanding ai papers, ai projects, etc.
 - [Convolution Sequence to Sequence Learning](https://github.com/flrngel/understanding-ai/issues/3)
 - [Bi-Directional Block Self-Attention for fast and memory-efficient sequence modeling](https://github.com/flrngel/understanding-ai/issues/2)
 - [Convolution Sequence to Sequence Learning](https://github.com/flrngel/understanding-ai/issues/1)
+
+## Implemented Papers
+
+- [Representation Learning with Contrastive Predictive Coding](https://github.com/flrngel/cpc-tensorflow)
+- [Attention Is All You Need](https://github.com/flrngel/Transformer-tensorflow)
+- [A Structured Self-Attentive Sentence Embedding](https://github.com/flrngel/Self-Attentive-tensorflow)
+- [Training RNNs as Fast as CNNs (Single Recurrent Unit)](https://github.com/flrngel/sru-tensorflow)
+- [TagSpace: Semantic Embeddings from Hashtags](https://github.com/flrngel/TagSpace-tensorflow)
+
+## Personal Research
+
+- [Character based Temporal Convolutional Networks + Attention Layer](https://github.com/flrngel/TCN-with-attention)
