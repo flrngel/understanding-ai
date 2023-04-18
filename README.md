@@ -14,15 +14,9 @@ My works for understanding ai papers, ai projects, etc.
 
 - [Character based Temporal Convolutional Networks + Attention Layer](https://github.com/flrngel/TCN-with-attention)
 
-## Notes on papers
+## Notes
 
-Note or summarization on papers using [Github Issues](https://github.com/flrngel/understanding-ai/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+sort%3Acreated-desc) starting from `January 29, 2018`
-(inspired by [kweonwooj/papers](https://github.com/kweonwooj/papers))
-
-For convenience of searching the notes on paper
-
-**Paper List**
-
+- [4/18/2023 - https://github.com/showlab/Image2Paragraph](https://github.com/flrngel/understanding-ai/issues/29)
 - [Eliminating All Bad Local Minima from Loss Landscapes Without Even Adding an Extra Unit](https://github.com/flrngel/understanding-ai/issues/28)
 - [Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual transfer and Beyond](https://github.com/flrngel/understanding-ai/issues/27)
 - [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://github.com/flrngel/understanding-ai/issues/26)
