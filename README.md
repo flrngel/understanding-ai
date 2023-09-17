@@ -2,6 +2,7 @@
 
 ## Notes
 
+- [09/16/2023 - https://github.com/pablovela5620/arxiv-researcher](https://github.com/flrngel/understanding-ai/issues/32)
 - [08/29/2023 - https://github.com/OpenGVLab/all-seeing](https://github.com/flrngel/understanding-ai/issues/31)
 - [04/18/2023 - https://github.com/jdagdelen/hyperDB](https://github.com/flrngel/understanding-ai/issues/30)
 - [04/18/2023 - https://github.com/showlab/Image2Paragraph](https://github.com/flrngel/understanding-ai/issues/29)
